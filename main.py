@@ -38,6 +38,9 @@ class Celija(threading.Thread):
     def odrediDalJeZiva(self):
         brojZivih = 0
         for i in self.susedi:
+            while(i.iteracija != self.iteracija) :
+                sleep(0.01)
+
             i.lock.acquire()
             if(i.ziv == 1):
                 brojZivih+=1
@@ -45,19 +48,17 @@ class Celija(threading.Thread):
             i.lock.release()
 
 
+
         while True:
-            self.lock.acquire()
             if (self.procitan >= len(self.susedi)):
                 self.procitan -= len(self.susedi)
                 break
-            self.lock.release()
             sleep(0.001)
 
         if self.ziv:
             self.ziv = True if (brojZivih == 2 or brojZivih == 3) else False
         else:
             self.ziv = True if (brojZivih == 3) else False
-        self.lock.release()
         svetovi[self.iteracija+1][self.y, self.x] = 1 if self.ziv else 0
 
     def run(self):
