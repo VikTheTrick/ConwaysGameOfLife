@@ -1,28 +1,17 @@
 from time import sleep
 from multiprocessing import  Lock
 import numpy
-from matplotlib.animation import FuncAnimation
-import matplotlib.pyplot as plt
-from IPython.display import HTML
-import numpy as np
 import threading
 
-
-# for i in range(y - 1, y + 2):
- #               for j in range(x - 1, x + 2):
-     #               if (i < 0 or i >= n or j < 0 or j >= m or (y == i and x == j)): continue
-      #              if (svet[i, j] == 1):
-        #                brojZivih += 1
-
 svetovi = []
-MAX_ITERACIJA = 10
+MAX_ITERACIJA = 20
 celije = []
 locks = []
 br = 0
 n=20
 m=20
 simulacija = []
-printlock = Lock()
+
 class Celija(threading.Thread):
     def __init__(self, x, y, ziv, susedi):
         threading.Thread.__init__(self)
@@ -47,8 +36,6 @@ class Celija(threading.Thread):
             i.procitan += 1
             i.lock.release()
 
-
-
         while True:
             if (self.procitan >= len(self.susedi)):
                 self.procitan -= len(self.susedi)
@@ -69,16 +56,7 @@ class Celija(threading.Thread):
 
 
 
-#def iteracija(svet):
-    #narednisvet = numpy.zeros((n, m), int)
-    #for i, j in np.ndindex(svet.shape):
-        #narednisvet[i,j]=odrediDalJeZiva(i,j, svet)
-
-    #return narednisvet
-
-
-def loop(svet, br):
-
+def loop(svet):
     svetovi.append(svet)
     for i in range(1,MAX_ITERACIJA+1) :
         svetovi.append(numpy.zeros((n,m),int))
@@ -94,9 +72,6 @@ def loop(svet, br):
     for c in celije :
         c.start()
 
-
-
-
 if __name__ == '__main__':
     svet = numpy.zeros((n,m),int)
     svet[0,0]=1
@@ -106,7 +81,7 @@ if __name__ == '__main__':
     svet[2,1]=1
     simulacija.append(svet)
     #print(svet)
-    loop(svet, 10)
+    loop(svet)
     print("gotovo")
     #steps = [(np.random.rand(n ** 2).reshape(n, n) > 0.5).astype(np.int8) for i in range(50)]
     #anim = animate(simulacija);
