@@ -1,16 +1,26 @@
 from time import sleep
-from multiprocessing import  Lock
+from multiprocessing import  Lock, Condition, Barrier
 import numpy
 import threading
 
+#SVE
 svetovi = []
 MAX_ITERACIJA = 20
-celije = []
-locks = []
-br = 0
 n=20
 m=20
 simulacija = []
+
+#Lock
+celije = []
+locks = []
+
+
+#Condition
+cekaonica=n*m
+condition = Condition()
+
+#Barrier
+barijera = Barrier(n*m)
 
 class Celija(threading.Thread):
     def __init__(self, x, y, ziv, susedi):
@@ -23,8 +33,35 @@ class Celija(threading.Thread):
         self.ziv = ziv
         self.lock = Lock()
 
+    def odrediDalJeZivaCondition(self):
+        global cekaonica
+        brojZivih = 0
 
-    def odrediDalJeZiva(self):
+        for i in self.susedi:
+            if(i.ziv):
+                brojZivih+=1
+
+        condition.acquire()
+        cekaonica-=1
+        if cekaonica==0:
+            condition.notify_all()
+        else:
+            condition.wait()
+
+        if self.ziv:
+            self.ziv = True if (brojZivih == 2 or brojZivih == 3) else False
+        else:
+            self.ziv = True if (brojZivih == 3) else False
+        svetovi[self.iteracija+1][self.y, self.x] = 1 if self.ziv else 0
+
+        cekaonica += 1
+        if cekaonica == n*m:
+            condition.notify_all()
+        else:
+            condition.wait()
+        condition.release()
+
+    def odrediDalJeZivaLock(self):
         brojZivih = 0
         for i in self.susedi:
             while(i.iteracija != self.iteracija) :
@@ -48,8 +85,29 @@ class Celija(threading.Thread):
             self.ziv = True if (brojZivih == 3) else False
         svetovi[self.iteracija+1][self.y, self.x] = 1 if self.ziv else 0
 
+    def odrediDalJeZiva(self):
+        global cekaonica
+        brojZivih = 0
+
+        for i in self.susedi:
+            if(i.ziv):
+                brojZivih+=1
+
+        b = barijera.wait()
+        if b==n*m-1:
+            barijera.reset()
+
+        if self.ziv:
+            self.ziv = True if (brojZivih == 2 or brojZivih == 3) else False
+        else:
+            self.ziv = True if (brojZivih == 3) else False
+        svetovi[self.iteracija+1][self.y, self.x] = 1 if self.ziv else 0
+
+        b = barijera.wait()
+        if b==n*m-1:
+            barijera.reset()
+
     def run(self):
-        global br
         while self.iteracija<MAX_ITERACIJA:
             self.odrediDalJeZiva()
             self.iteracija+=1
