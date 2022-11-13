@@ -130,17 +130,17 @@ def loop(svet):
     for c in celije :
         c.start()
 
-if __name__ == '__main__':
-    svet = numpy.zeros((n,m),int)
-    svet[0,0]=1
-    svet[0,2]=1
-    svet[1,1]=1
-    svet[1,2]=1
-    svet[2,1]=1
-    simulacija.append(svet)
+#if __name__ == '__main__':
+#  svet = numpy.zeros((n,m),int)
+    #  svet[0,0]=1
+    #  svet[0,2]=1
+    #  svet[1,1]=1
+    #  svet[1,2]=1
+    #  svet[2,1]=1
+    #  simulacija.append(svet)
     #print(svet)
-    loop(svet)
-    print("gotovo")
+    #  loop(svet)
+    # print("gotovo")
     #steps = [(np.random.rand(n ** 2).reshape(n, n) > 0.5).astype(np.int8) for i in range(50)]
     #anim = animate(simulacija);
     #HTML(anim.to_html5_video())
