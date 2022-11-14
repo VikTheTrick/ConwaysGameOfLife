@@ -49,7 +49,6 @@ for i in range(0, iteracije):
     pool.close()
     pool.join()
     brojac = 0
-    svet
     for y in range(0, len(rez)):
         for x in range(0, len(rez[y])):
             svet[brojac] = rez[y][x]
