@@ -1,3 +1,8 @@
+from matplotlib.animation import FuncAnimation
+import matplotlib.pyplot as plt
+from IPython.display import HTML
+import numpy as np
+
 import multiprocessing
 import numpy
 import math
@@ -5,15 +10,11 @@ import math
 bp = 11
 n = 20
 m = 20
-iteracije = 20
+iteracije = 50
 
 svet = []
-svet = numpy.zeros((n*m), int)
-svet[0*m+0] = 1
-svet[0*m+2] = 1
-svet[1*m+1] = 1
-svet[1*m+2] = 1
-svet[2*m+1] = 1
+svet = numpy.random.randint(2, size=(n*m))
+
 steps = []
 steps.append(numpy.copy(svet).reshape((n, m)))
 
@@ -55,3 +56,24 @@ for i in range(0, iteracije):
             brojac += 1
             
     steps.append(numpy.copy(svet).reshape((n, m)))
+
+def animate(steps):
+  def init():
+    im.set_data(steps[0])
+    return [im]
+  
+  
+  def animate(i):
+    im.set_data(steps[i])
+    return [im]
+
+  im = plt.matshow(steps[0], interpolation='None', animated=True)
+  
+  anim = FuncAnimation(im.get_figure(), animate, init_func=init,
+                  frames=len(steps), interval=100, blit=True, repeat=False)
+  return anim
+
+
+n = 20
+anim = animate(steps)
+HTML(anim.to_html5_video())
