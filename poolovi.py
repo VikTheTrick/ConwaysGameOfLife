@@ -1,17 +1,14 @@
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 from IPython.display import HTML
-import numpy as np
-
 import multiprocessing
 import numpy
 import math
-import random
 
 bp = 1
 n = 100
 m = 100
-iteracije = 1000
+iteracije = 100
 
 svet = []
 svet = multiprocessing.Array('i', numpy.random.randint(2, size=(n*m)))
