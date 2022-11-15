@@ -8,8 +8,8 @@ from time import sleep
 import pickle
 
 MAX_ITERACIJA = 10
-n = 10
-m = 10
+n = 15
+m = 15
 simulacija = []
 celije = []
 krajnjiSvetovi =[]
@@ -70,7 +70,7 @@ class Celija(Process):
 
 
         while self.iterationQueue.qsize() != self.iteracija:
-            sleep(0.01)
+            sleep(0.1)
 
     def run(self):
         while self.iteracija < MAX_ITERACIJA:
