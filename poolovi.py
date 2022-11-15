@@ -6,14 +6,15 @@ import numpy as np
 import multiprocessing
 import numpy
 import math
+import random
 
-bp = 11
-n = 20
-m = 20
-iteracije = 50
+bp = 1
+n = 100
+m = 100
+iteracije = 1000
 
 svet = []
-svet = numpy.random.randint(2, size=(n*m))
+svet = multiprocessing.Array('i', numpy.random.randint(2, size=(n*m)))
 
 steps = []
 steps.append(numpy.copy(svet).reshape((n, m)))
@@ -43,11 +44,9 @@ def indeksi(i):
     kraj = math.floor(n*m/bp*(i+1))-1
     return (pocetak, kraj)
 
+pool = multiprocessing.Pool(bp)
 for i in range(0, iteracije):
-    pool = multiprocessing.Pool(bp)
-    rez = pool.map(obradi, list(range(0, bp)))
-    pool.close()
-    pool.join()
+    rez = pool.map(obradi, list(range(0, bp)),)
     brojac = 0
     for y in range(0, len(rez)):
         for x in range(0, len(rez[y])):
@@ -55,6 +54,8 @@ for i in range(0, iteracije):
             brojac += 1
             
     steps.append(numpy.copy(svet).reshape((n, m)))
+pool.close()
+pool.join()
 
 def animate(steps):
   def init():
@@ -73,6 +74,5 @@ def animate(steps):
   return anim
 
 
-n = 20
 anim = animate(steps)
 HTML(anim.to_html5_video())
