@@ -1,3 +1,5 @@
+#30x30 100 iteracija 27 sekundi, pre pokretanja treba restart runtime na colabu
+
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 from IPython.display import HTML
@@ -12,6 +14,10 @@ MAX_ITERACIJA = 100
 n=30
 m=30
 celije = []
+usle = 0
+izasle = n*m
+bool = True
+lock = Lock()
 
 class Celija(threading.Thread):
     def __init__(self, x, y, ziv, susedi):
@@ -22,33 +28,48 @@ class Celija(threading.Thread):
         self.iteracija = 0
         self.procitan = 0
         self.ziv = ziv
-        self.lock = Lock()
 
     def odrediDalJeZiva(self):
+        global izasle, usle, bool, lock
         brojZivih = 0
-        for i in self.susedi:
-            while(i.iteracija != self.iteracija) :
-                sleep(0.01)
 
-            i.lock.acquire()
-            if(i.ziv == 1):
+        for i in self.susedi:
+            if(i.ziv):
                 brojZivih+=1
-            i.procitan += 1
-            i.lock.release()
+        while True:
+            lock.acquire()
+            if(izasle==n*m):
+                break
+            lock.release()
+            sleep(0.01)
+        lock.release()
+        lock.acquire()
+        if usle==0:
+            usle+=1
+            bool = False
+        elif usle==n*m-1:
+            usle=0
+            bool = True
+            izasle = 0
+        else:
+            usle+=1
+        lock.release()
+        self.ziv = brojZivih == 3 or (brojZivih == 2 and self.ziv)
+        self.iteracija+=1
+        svetovi[self.iteracija][self.y, self.x] = 1 if self.ziv else 0
+
 
         while True:
-            if (self.procitan >= len(self.susedi)):
-                self.procitan -= len(self.susedi)
-                break
+            with lock:
+                if bool: break
             sleep(0.01)
+        with lock:
+            izasle += 1
 
-        self.ziv = brojZivih == 3 or (brojZivih == 2 and self.ziv)
-        svetovi[self.iteracija+1][self.y, self.x] = 1 if self.ziv else 0
 
     def run(self):
         while self.iteracija<MAX_ITERACIJA:
             self.odrediDalJeZiva()
-            self.iteracija+=1
 
 
 
@@ -67,10 +88,11 @@ def loop(svet):
                 c.susedi.add(celije[i*m+j])
     for c in celije :
         c.start()
+    for c in celije :
+        c.join()
 
 svet = numpy.random.randint(2, size=(n,m))
 loop(svet)
-sleep(1)
 
 def animate(steps):
   ''' Prima niz matrica (svaka matrica je stanje u jednom koraku simulacije) 
