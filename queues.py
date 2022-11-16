@@ -8,8 +8,8 @@ from time import sleep
 import pickle
 
 MAX_ITERACIJA = 10
-n = 15
-m = 15
+n = 10
+m = 10
 simulacija = []
 celije = []
 krajnjiSvetovi =[]
@@ -88,14 +88,11 @@ def consumer(queue, svetovi, iterationQueue):
             item = queue.get()
             iteracija += 1
             if iteracija % (n * m) == 0:
-                print("desilo se")
                 iterationQueue.put(1)
             svetovi[item.iteracija][item.y, item.x] = item.stanje
         except queue.Empty:
             sleep(0.01)
-    print("svetovi")
-    krajnjiSvetovi = svetovi
-    print(svetovi)
+
 
 
 def loop(svetovi):
@@ -138,6 +135,3 @@ if __name__ == '__main__':
         svetovi.append(numpy.zeros((n, m), int))
     simulacija.append(svetovi)
     loop(svetovi)
-    print("kraj")
-    for i in krajnjiSvetovi:
-        print(i)
